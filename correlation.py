@@ -28,6 +28,7 @@ session_name=args.session
 neuro_wise=args.neuro_wise
 model_type_list=args.model_list
 model_name=args.model_name
+print(args.neuro_wise)
 
 device='cpu'
 def batch(iterable, n=1):
@@ -392,7 +393,9 @@ for model_type in model_type_list:
   n2=f.get('neural/synthetic/monkey_'+final_path)[:]
   neuron_target=np.mean(n2, axis=0)
   print(neuron_target.shape)
-  if neuro_wise==True:
+  neuro_wise=args.neuro_wise
+  print(neuro_wise)
+  if neuro_wise == 'True':
     print("!!!!!!!!!!!!!!!!!!!!!")
     with open(f'/content/gdrive/MyDrive/V4/{session_name}/{model_type}_natural_mean.json') as json_file:
       layerlist=[]
@@ -587,7 +590,7 @@ for model_type in model_type_list:
           print(natural_score_dict[k])
           print(synth_score_dict[k]) 
       print(cc)
-      if neuro_wise==True:
+      if neuro_wise=='True':
         np.save(f'gdrive/MyDrive/V4/{session_name}/{model_type}_synth_neuron_corr.npy',total_synth_corr)
         np.save(f'gdrive/MyDrive/V4/{session_name}/{model_type}_natural_neuron_corr.npy',total_natural_corr)
 
