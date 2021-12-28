@@ -21,12 +21,15 @@ import torchvision.models as models
 parser = argparse.ArgumentParser(description='Neural correlation')
 parser.add_argument('--session', type=str)
 parser.add_argument('--model_list',nargs="+")
-parser.add_argument('--neuro_wise', type=boolean)
-
+parser.add_argument('--neuro_wise')
+parser.add_argument('--model_name')
+args = parser.parse_args()
 session_name=args.session
 neuro_wise=args.neuro_wise
 model_type_list=args.model_list
+model_name=args.model_name
 
+device='cpu'
 def batch(iterable, n=1):
     l = len(iterable)
     for ndx in range(0, l, n):
@@ -289,12 +292,12 @@ for model_type in model_type_list:
     ])
 
   if model_type=="clip":
-    !pip install git+https://github.com/openai/CLIP.git
+    # pip install git+https://github.com/openai/CLIP.git
     import clip
     resnet, preprocess = clip.load("RN50")
 
   if model_type=='linf_8':
-    !pip install robustness
+    # pip install robustness
     resnet = torch.load('/content/gdrive/MyDrive/imagenet_linf_8_model.pt') # https://drive.google.com/file/d/1DRkIcM_671KQNhz1BIXMK6PQmHmrYy_-/view?usp=sharing
     preprocess = transforms.Compose([
     transforms.Resize(256),
@@ -307,7 +310,7 @@ for model_type in model_type_list:
 
 
   if model_type=='linf_4':
-    !pip install robustness
+    # pip install robustness
     resnet = torch.load('/content/gdrive/MyDrive/robust_resnet.pt')#https://drive.google.com/file/d/1_tOhMBqaBpfOojcueSnYQRw_QgXdPVS6/view?usp=sharing
     preprocess = transforms.Compose([
     transforms.Resize(256),
@@ -320,7 +323,7 @@ for model_type in model_type_list:
 
 
   if model_type=='l2_3':
-    !pip install robustness
+    # pip install robustness
     resnet = torch.load('/content/gdrive/MyDrive/imagenet_l2_3_0_model.pt') # https://drive.google.com/file/d/1SM9wnNr_WnkEIo8se3qd3Di50SUT9apn/view?usp=sharing 
     preprocess = transforms.Compose([
     transforms.Resize(256),
@@ -331,7 +334,7 @@ for model_type in model_type_list:
     std=[0.229, 0.224, 0.225])
     ])
   if model_type=='resnet50_l2_eps0.01' or model_type=='resnet50_l2_eps0.1' or model_type=='resnet50_l2_eps0.03' or model_type=='resnet50_l2_eps0.5' or model_type=='resnet50_l2_eps0.25' or model_type=='resnet50_l2_eps3' or model_type=='resnet50_l2_eps5' or model_type=='resnet50_l2_eps1':
-    !pip install git+https://github.com/HelenR6/robustness
+    # pip install git+https://github.com/HelenR6/robustness
     from robustness.datasets import CIFAR,ImageNet
     from robustness.model_utils import make_and_restore_model
     ds = ImageNet('/tmp')
@@ -364,17 +367,8 @@ for model_type in model_type_list:
     mean=[0.485, 0.456, 0.406],
     std=[0.229, 0.224, 0.225])
     ])
-    return resnet
-
-    preprocess = transforms.Compose([
-    transforms.Resize(256),
-    transforms.CenterCrop(224),
-    transforms.ToTensor(),
-    transforms.Normalize(
-    mean=[0.485, 0.456, 0.406],
-    std=[0.229, 0.224, 0.225])
-    ])
-    return resnet
+    
+    
 
   from PIL import Image
   session_path=args.session.replace('_','/')
