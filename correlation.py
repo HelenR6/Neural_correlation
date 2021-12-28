@@ -24,8 +24,8 @@ parser.add_argument('--model_list',nargs="+")
 parser.add_argument('--neuro_wise', type=boolean)
 
 session_name=args.session
-
-
+neuro_wise=args.neuro_wise
+model_type_list=args.model_list
 
 def batch(iterable, n=1):
     l = len(iterable)
