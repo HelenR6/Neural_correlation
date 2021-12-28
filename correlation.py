@@ -22,7 +22,7 @@ parser = argparse.ArgumentParser(description='Neural correlation')
 parser.add_argument('--session', type=str)
 parser.add_argument('--model_list', type=list)
 
-
+session_name=args.session
 
 
 
