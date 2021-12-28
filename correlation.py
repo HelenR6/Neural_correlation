@@ -21,6 +21,7 @@ import torchvision.models as models
 parser = argparse.ArgumentParser(description='Neural correlation')
 parser.add_argument('--session', type=str)
 parser.add_argument('--model_list', type=list)
+parser.add_argument('--neuro_wise', type=boolean)
 
 session_name=args.session
 
