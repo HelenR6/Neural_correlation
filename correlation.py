@@ -370,8 +370,8 @@ for model_type in model_type_list:
     ])
   if model_type=="v_resnet_60" or  model_type=="v_resnet_30" or  model_type=="v_resnet_0" or  model_type=="v_resnet_90":
     resnet=models.resnet50(pretrained=False)
-    epoch_num=args.arch.split('_')[2]
-    checkpoint = torch.load('/content/gdrive/MyDrive/model_checkpoints/model_epoch{epoch_num}.pth.tar',map_location=torch.device('cuda') )
+    epoch_num=model_type.split('_')[2]
+    checkpoint = torch.load(f'/content/gdrive/MyDrive/model_checkpoints/model_epoch{epoch_num}.pth.tar',map_location=torch.device('cpu') )
     state_dict=checkpoint['state_dict']
     for k in list(state_dict.keys()):
         if k.startswith('module.') :
@@ -387,7 +387,7 @@ for model_type in model_type_list:
     mean=[0.485, 0.456, 0.406],
     std=[0.229, 0.224, 0.225])
     ])
-    return resnet
+    
     
     
 
