@@ -390,7 +390,7 @@ for model_type in model_type_list:
     mean=[0.485, 0.456, 0.406],
     std=[0.229, 0.224, 0.225])
     ])
-   if model_type=="v_resnet_0" or  model_type=="resnet_0" :
+  if model_type=="v_resnet_0" or  model_type=="resnet_0" :
     resnet=models.resnet50(pretrained=False)
     preprocess = transforms.Compose([
     transforms.Resize(256),
