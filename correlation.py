@@ -508,7 +508,7 @@ for model_type in model_type_list:
   for layer in layerlist:
     if model_type=="clip":
       exec(f"{model_name}.visual.{layer}.register_forward_hook(get_activation('{layer}'))")
-    elif model_type=="linf_8" or model_type=="linf_4" or model_type=="l2_3" or model_type=='resnet50_l2_eps0.01' or model_type=='resnet50_l2_eps0.1' or model_type=='resnet50_l2_eps0.03' or model_type=='resnet50_l2_eps0.5' or model_type=='resnet50_l2_eps0.25' or model_type=='resnet50_l2_eps3' or model_type=='resnet50_l2_eps5' or model_type=='resnet50_l2_eps1':
+    elif model_type=="linf_8" or model_type=="linf_4" or model_type=="l2_3" or model_type=='resnet50_l2_eps0.01' or model_type=='resnet50_l2_eps0.1' or model_type=='resnet50_l2_eps0.03' or model_type=='resnet50_l2_eps0.5' or model_type=='resnet50_l2_eps0.25' or model_type=='resnet50_l2_eps3' or model_type=='resnet50_l2_eps5' or model_type=='resnet50_l2_eps1' or model_type=='resnet50_l2_eps0.05':
       exec(f"{model_name}.model.{layer}.register_forward_hook(get_activation('{layer}'))")
     else:
       exec(f"{model_name}.{layer}.register_forward_hook(get_activation('{layer}'))")
