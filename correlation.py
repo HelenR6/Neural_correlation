@@ -334,7 +334,7 @@ for model_type in model_type_list:
     mean=[0.485, 0.456, 0.406],
     std=[0.229, 0.224, 0.225])
     ])
-  if model_type=='resnet50_l2_eps0.01' or model_type=='resnet50_l2_eps0.1' or model_type=='resnet50_l2_eps0.03' or model_type=='resnet50_l2_eps0.5' or model_type=='resnet50_l2_eps0.25' or model_type=='resnet50_l2_eps3' or model_type=='resnet50_l2_eps5' or model_type=='resnet50_l2_eps1':
+  if model_type=='resnet50_l2_eps0.01' or model_type=='resnet50_l2_eps0.1' or model_type=='resnet50_l2_eps0.03' or model_type=='resnet50_l2_eps0.5' or model_type=='resnet50_l2_eps0.25' or model_type=='resnet50_l2_eps3' or model_type=='resnet50_l2_eps5' or model_type=='resnet50_l2_eps1'or model_type=='resnet50_l2_eps0.05':
     # pip install git+https://github.com/HelenR6/robustness
     from robustness.datasets import CIFAR,ImageNet
     from robustness.model_utils import make_and_restore_model
