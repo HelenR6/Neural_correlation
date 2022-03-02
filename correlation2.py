@@ -430,7 +430,7 @@ for model_type in model_type_list:
   print(neuro_wise)
   if neuro_wise == 'True':
     print("!!!!!!!!!!!!!!!!!!!!!")
-    with open(f'/content/gdrive/MyDrive/V4/{session_name}/{model_type}_natural_mean.json') as json_file:
+    with open(f'/content/gdrive/MyDrive/V4/{session_name}/st_resnet_natural_mean.json') as json_file:
       layerlist=[]
       load_data = json.load(json_file)
       json_acceptable_string = load_data.replace("'", "\"")
