@@ -368,7 +368,7 @@ for model_type in model_type_list:
     mean=[0.485, 0.456, 0.406],
     std=[0.229, 0.224, 0.225])
     ])
-  if model_type=="v_resnet_60" or  model_type=="v_resnet_30"  or  model_type=="v_resnet_90" or  model_type=="v_resnet_10" or  model_type=="v_resnet_20":
+  if model_type=="v_resnet_60" or  model_type=="v_resnet_30"  or  model_type=="v_resnet_90" or  model_type=="v_resnet_10" or  model_type=="v_resnet_20" or  model_type=="v_resnet_40" or  model_type=="v_resnet_50" or  model_type=="v_resnet_60":
     resnet=models.resnet50(pretrained=False)
     epoch_num=model_type.split('_')[2]
     if model_type=="v_resnet_90":
