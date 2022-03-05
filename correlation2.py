@@ -349,7 +349,7 @@ for model_type in model_type_list:
     mean=[0.485, 0.456, 0.406],
     std=[0.229, 0.224, 0.225])
     ])
-  if model_type=="resnet_30"  or model_type=="resnet_60" or model_type=="resnet_90":
+  if model_type=="resnet_30"  or model_type=="resnet_60" or model_type=="resnet_90" or  model_type=="resnet_0" or  model_type=="resnet_10" or  model_type=="resnet_20" or  model_type=="resnet_40" or  model_type=="resnet_50" or  model_type=="resnet_60" or  model_type=="resnet_70" or  model_type=="resnet_80" or  model_type=="resnet_90":
     resnet=models.resnet50(pretrained=False)
     model_epoch=model_type.split('_')[1]
     checkpoint = torch.load(f'/content/gdrive/MyDrive/model_checkpoints/{model_epoch}_model_best.pth.tar',map_location=torch.device('cpu') )
@@ -390,7 +390,7 @@ for model_type in model_type_list:
     mean=[0.485, 0.456, 0.406],
     std=[0.229, 0.224, 0.225])
     ])
-  if model_type=="v_resnet_0" or  model_type=="resnet_0" :
+  if model_type=="v_resnet_0"  :
     resnet=models.resnet50(pretrained=False)
     preprocess = transforms.Compose([
     transforms.Resize(256),
