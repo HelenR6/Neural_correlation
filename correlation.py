@@ -133,7 +133,26 @@ for model_type in model_type_list:
     mean=[0.485, 0.456, 0.406],
     std=[0.229, 0.224, 0.225])
     ])
-
+    
+  if model_type=="moco101":
+    # load checkpoints of moco
+    state_dict = torch.load('/content/gdrive/MyDrive/model_checkpoints/moco101/moco_190.pth.tar',map_location=torch.device('cpu'))['state_dict']
+    resnet = models.resnet50(pretrained=False)
+    for k in list(state_dict.keys()):
+        if k.startswith('module.encoder_q') and not k.startswith('module.encoder_q.fc') :
+            state_dict[k[len("module.encoder_q."):]] = state_dict[k]
+        del state_dict[k]
+    msg = resnet.load_state_dict(state_dict, strict=False)
+    # assert set(msg.missing_keys) == {"fc.weight", "fc.bias"}
+    #preprocess for moco
+    preprocess = transforms.Compose([
+    transforms.Resize(256),
+    transforms.CenterCrop(224),
+    transforms.ToTensor(),
+    transforms.Normalize(
+    mean=[0.485, 0.456, 0.406],
+    std=[0.229, 0.224, 0.225])
+    ])
   if model_type=="place365_rn50":
     # load checkpoints for place365 resnet
     resnet=models.resnet50(pretrained=False)
