@@ -136,7 +136,8 @@ for model_type in model_type_list:
     
   if model_type.split('_')[0]=="moco101":
     # load checkpoints of moco
-    state_dict = torch.load('/content/gdrive/MyDrive/model_checkpoints/moco101/moco_{model_type.split('_')[1]}.pth.tar',map_location=torch.device('cpu'))['state_dict']
+    epoch_num=model_type.split('_')[1]
+    state_dict = torch.load(f'/content/gdrive/MyDrive/model_checkpoints/moco101/moco_{epoch_num}.pth.tar',map_location=torch.device('cpu'))['state_dict']
     resnet = models.resnet50(pretrained=False)
     for k in list(state_dict.keys()):
         if k.startswith('module.encoder_q') and not k.startswith('module.encoder_q.fc') :
