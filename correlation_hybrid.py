@@ -8,6 +8,7 @@ import torchvision.models as models
 import torch 
 import torch.nn as nn
 from PIL import Image
+from load_model import load_model
 import json
 import torch
 from sklearn.model_selection import KFold
