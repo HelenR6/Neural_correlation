@@ -16,6 +16,7 @@ from scipy.stats.stats import pearsonr
 from sklearn.decomposition import PCA
 import torch.nn.functional as F
 import torchvision.models as models
+import random
 
 
 parser = argparse.ArgumentParser(description='Neural correlation')
@@ -613,6 +614,8 @@ for model_type in model_type_list:
               # print(neuron_target[synth_train_ids].shape)
               hybrid_pca=np.vstack(((natural_x_pca)[natual_train_ids],(synth_x_pca)[synth_train_ids]))
               hybrid_neuron=np.vstack((target[natual_train_ids],neuron_target[synth_train_ids]))
+              random.Random(fold).shuffle(hybrid_pca)
+              random.Random(fold).shuffle(hybrid_neuron)
               # print("hybrid_pca")
               # print(hybrid_pca.shape)
               # print("hybrid_neuron")
