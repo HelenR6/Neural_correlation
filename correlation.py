@@ -51,7 +51,7 @@ import torch.nn.functional as F
 import torchvision.models as models
 
 for model_type in model_type_list:
-    resnet,preprocess=load_model(model_type)
+  resnet,preprocess=load_model(model_type)
 #   if model_type=="simclr":
 #     # load checkpoint for simclr
 #     checkpoint = torch.load('/content/gdrive/MyDrive/resnet50-1x.pth')
