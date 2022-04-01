@@ -606,27 +606,35 @@ for model_type in model_type_list:
           print('natural_prediction.shape')
           print(natural_prediction.shape)
           synth_prediction=np.empty((neuron_target.shape[0],neuron_target.shape[1]), dtype=object)
-          for fold, (natual_train_ids, natural_test_ids) in enumerate(kfold.split(natural_x_pca)):
-            for fold, (synth_train_ids, synth_test_ids) in enumerate(kfold.split(synth_x_pca)):
-              clf = Ridge(random_state=seed)
-              # print((natural_x_pca)[natual_train_ids].shape)
-              # print(target[natual_train_ids].shape)
-              # print("synth")
-              # print((synth_x_pca)[synth_train_ids].shape)
-              # print(neuron_target[synth_train_ids].shape)
-              hybrid_pca=np.vstack(((natural_x_pca)[natual_train_ids],(synth_x_pca)[synth_train_ids]))
-              hybrid_neuron=np.vstack((target[natual_train_ids],neuron_target[synth_train_ids]))
-              random.Random(fold).shuffle(hybrid_pca)
-              random.Random(fold).shuffle(hybrid_neuron)
-              # print("hybrid_pca")
-              # print(hybrid_pca.shape)
-              # print("hybrid_neuron")
-              # print(hybrid_neuron.shape)
-              # clf.fit((natural_x_pca)[natual_train_ids],target[natual_train_ids])
-              clf.fit(hybrid_pca,hybrid_neuron)
-              natural_prediction[natural_test_ids]=clf.predict((natural_x_pca)[natural_test_ids])
-              synth_prediction[synth_test_ids]=clf.predict((synth_x_pca)[synth_test_ids])
-
+          hybrid_prediction= np.vstack(natural_prediction,synth_prediction)
+          hybrid_pca=np.vstack((natural_x_pca,synth_x_pca))
+          hybrid_neuron=np.vstack((target,neuron_target))
+          for fold, (train_ids,test_ids) in enumerate(kfold.split(hybrid_pca)):
+            clf = Ridge(random_state=seed)
+            clf.fit(hybrid_pca[train_ids],hybrid_neuron[train_ids])
+            hybrid_prediction[test_ids]=clf.predict((hybrid_pca)[test_ids])
+          # for fold, (natual_train_ids, natural_test_ids) in enumerate(kfold.split(natural_x_pca)):
+          #   for fold, (synth_train_ids, synth_test_ids) in enumerate(kfold.split(synth_x_pca)):
+          #     clf = Ridge(random_state=seed)
+          #     # print((natural_x_pca)[natual_train_ids].shape)
+          #     # print(target[natual_train_ids].shape)
+          #     # print("synth")
+          #     # print((synth_x_pca)[synth_train_ids].shape)
+          #     # print(neuron_target[synth_train_ids].shape)
+          #     hybrid_pca=np.vstack(((natural_x_pca)[natual_train_ids],(synth_x_pca)[synth_train_ids]))
+          #     hybrid_neuron=np.vstack((target[natual_train_ids],neuron_target[synth_train_ids]))
+          #     random.Random(fold).shuffle(hybrid_pca)
+          #     random.Random(fold).shuffle(hybrid_neuron)
+          #     # print("hybrid_pca")
+          #     # print(hybrid_pca.shape)
+          #     # print("hybrid_neuron")
+          #     # print(hybrid_neuron.shape)
+          #     # clf.fit((natural_x_pca)[natual_train_ids],target[natual_train_ids])
+          #     clf.fit(hybrid_pca,hybrid_neuron)
+          #     natural_prediction[natural_test_ids]=clf.predict((natural_x_pca)[natural_test_ids])
+          #     synth_prediction[synth_test_ids]=clf.predict((synth_x_pca)[synth_test_ids])
+          natural_prediction=hybrid_prediction[:641,:]
+          synth_prediction=hybrid_prediction[641:,:]
           if natural_score_dict[k] is None:
             natural_corr_array= np.array([pearsonr(natural_prediction[:, i], target[:, i])[0] for i in range(natural_prediction.shape[-1])])
             total_natural_corr=natural_corr_array
