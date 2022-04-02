@@ -606,7 +606,9 @@ for model_type in model_type_list:
           print('natural_prediction.shape')
           print(natural_prediction.shape)
           synth_prediction=np.empty((neuron_target.shape[0],neuron_target.shape[1]), dtype=object)
-          hybrid_prediction= np.vstack(natural_prediction,synth_prediction)
+          print('synth_prediction.shape')
+          print(synth_prediction.shape)
+          hybrid_prediction= np.vstack((natural_prediction,synth_prediction))
           hybrid_pca=np.vstack((natural_x_pca,synth_x_pca))
           hybrid_neuron=np.vstack((target,neuron_target))
           for fold, (train_ids,test_ids) in enumerate(kfold.split(hybrid_pca)):
@@ -633,8 +635,8 @@ for model_type in model_type_list:
           #     clf.fit(hybrid_pca,hybrid_neuron)
           #     natural_prediction[natural_test_ids]=clf.predict((natural_x_pca)[natural_test_ids])
           #     synth_prediction[synth_test_ids]=clf.predict((synth_x_pca)[synth_test_ids])
-          natural_prediction=hybrid_prediction[:641,:]
-          synth_prediction=hybrid_prediction[641:,:]
+          natural_prediction=hybrid_prediction[:640,:]
+          synth_prediction=hybrid_prediction[640:,:]
           if natural_score_dict[k] is None:
             natural_corr_array= np.array([pearsonr(natural_prediction[:, i], target[:, i])[0] for i in range(natural_prediction.shape[-1])])
             total_natural_corr=natural_corr_array
