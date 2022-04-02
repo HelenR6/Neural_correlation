@@ -16,6 +16,7 @@ from scipy.stats.stats import pearsonr
 from sklearn.decomposition import PCA
 import torch.nn.functional as F
 import torchvision.models as models
+from load_model import load_model
 
 
 parser = argparse.ArgumentParser(description='Neural correlation')
