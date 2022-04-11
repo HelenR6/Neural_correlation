@@ -6,7 +6,13 @@ from load_SIN_model import load_SIN_model
 
 def load_model(model_type):
   if model_type=="resnet50_trained_on_SIN" or model_type=="resnet50_trained_on_SIN_and_IN" or model_type=="resnet50_trained_on_SIN_and_IN_then_finetuned_on_IN":
-    resnet = load_SIN_model(model_name = model_type)
+    state_dict = torch.load(f'/content/gdrive/MyDrive/model_checkpoints/{model_type}.pth.tar',map_location="cpu")['state_dict']
+    resnet=models.resnet50(pretrained=False)
+    for k in list(state_dict.keys()):
+        if k.startswith('module'):
+            state_dict[k[len("module."):]] = state_dict[k]
+        del state_dict[k]
+    resnet.load_state_dict(state_dict)
     preprocess = transforms.Compose([
     transforms.Resize(256),
     transforms.CenterCrop(224),
