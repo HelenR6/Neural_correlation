@@ -2,8 +2,20 @@ import torch
 import torchvision.models as models
 import matplotlib.pyplot as plt
 from torchvision import transforms 
+from load_SIN_model import load_SIN_model
 
 def load_model(model_type):
+  if model_type=="resnet50_trained_on_SIN" or model_type=="resnet50_trained_on_SIN_and_IN" or model_type=="resnet50_trained_on_SIN_and_IN_then_finetuned_on_IN":
+    resnet = load_SIN_model(model_name = model_type)
+    preprocess = transforms.Compose([
+    transforms.Resize(256),
+    transforms.CenterCrop(224),
+    transforms.ToTensor(),
+    transforms.Normalize(
+    mean=[0.485, 0.456, 0.406],
+    std=[0.229, 0.224, 0.225])
+    ])
+    
   if model_type=="simclr":
     # load checkpoint for simclr
     checkpoint = torch.load('/content/gdrive/MyDrive/resnet50-1x.pth')
