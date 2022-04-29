@@ -16,6 +16,12 @@ from scipy.stats.stats import pearsonr
 from sklearn.decomposition import PCA
 import torch.nn.functional as F
 import torchvision.models as models
+import numpy as np
+from sklearn.model_selection import KFold
+from sklearn.linear_model import Ridge
+from scipy.stats.stats import pearsonr
+from sklearn.decomposition import PCA
+import torch.nn.functional as F
 from load_model import load_model
 
 
@@ -470,7 +476,6 @@ for model_type in model_type_list:
   neuro_wise=args.neuro_wise
   print(neuro_wise)
   if neuro_wise == 'True':
-    print("!!!!!!!!!!!!!!!!!!!!!")
     with open(f'/content/gdrive/MyDrive/V4/{session_name}/{model_type}_natural_mean.json') as json_file:
       layerlist=[]
       load_data = json.load(json_file)
@@ -489,8 +494,6 @@ for model_type in model_type_list:
   else:
     #layer list for resnet 50
     layerlist=['maxpool','layer1[0]','layer1[1]','layer1[2]','layer2[0]','layer2[1]','layer2[2]','layer2[3]','layer3[0]','layer3[1]','layer3[2]','layer3[3]','layer3[4]','layer3[5]','layer4[0]','layer4[1]','layer4[2]','avgpool','fc']
-      # layer list for neuro_wise histogram
-    # layerlist=['layer3[0]']
   if model_name=="resnet":
     x1=natural_perm_tensor
     model=resnet
@@ -503,23 +506,18 @@ for model_type in model_type_list:
           activation[name] = output.detach()
       return hook
   for layer in layerlist:
-    # #used for robust resnet only!!!!!!!!!!!!!!!!!!!!!
-    #exec(f"{model_name}.model.{layer}.register_forward_hook(get_activation('{layer}'))")
     if model_type=="clip":
       exec(f"{model_name}.visual.{layer}.register_forward_hook(get_activation('{layer}'))")
     elif model_type=="linf_8" or model_type=="linf_4" or model_type=="l2_3" or model_type=='resnet50_l2_eps0.1' or model_type=='resnet50_l2_eps0.01' or model_type=='resnet50_l2_eps0.03' or model_type=='resnet50_l2_eps0.5' or model_type=='resnet50_l2_eps0.25' or model_type=='resnet50_l2_eps3' or model_type=='resnet50_l2_eps5' or model_type=='resnet50_l2_eps1' or model_type=='resnet50_l2_eps0.05':
       exec(f"{model_name}.model.{layer}.register_forward_hook(get_activation('{layer}'))")
     else:
       exec(f"{model_name}.{layer}.register_forward_hook(get_activation('{layer}'))")
-    # used for fast training 
-    #exec(f"{model_name}.module.{layer}.register_forward_hook(get_activation('{layer}'))")
   counter=0
   for  minibatch in batch(x1,64):
     print(counter)
     if model_type=="clip":
       output=exec(f"{model_name}.visual(minibatch.to(device))")
     else:
-    # output=resnet(minibatch.to(device).divide(255))
       output=exec(f"{model_name}(minibatch.to(device))")
     if counter==0:
       with h5py.File(f'{model_type}_natural_layer_activation.hdf5','w')as f:
@@ -555,9 +553,6 @@ for model_type in model_type_list:
     else:
       exec(f"{model_name}.{layer}.register_forward_hook(get_activation('{layer}'))")
   counter=0
-  # for  minibatch in batch(x1,64):
-  print(counter)
-  #output=resnet(minibatch.to(device).divide(255))
   if model_type=="clip":
     output=exec(f"{model_name}.visual(x1.to(device))")
   else:
@@ -575,20 +570,10 @@ for model_type in model_type_list:
         del f[k]
         dset=f.create_dataset(k,data=np.concatenate((a,activation[k].cpu().detach().numpy()),axis=0))
   counter=counter+1
-  # import pycuda.autoinit
-  # import pycuda.gpuarray as gpuarray
-  # import skcuda.linalg as linalg
-  # from skcuda.linalg import PCA as cuPCA
-  import numpy as np
-  from sklearn.model_selection import KFold
-  from sklearn.linear_model import Ridge
-  from scipy.stats.stats import pearsonr
-  from sklearn.decomposition import PCA
-  import torch.nn.functional as F
+
 
   natural_score_dict={}
   synth_score_dict={}
-  # random_list=[2,5,667,89,43]
   random_list=[2,10,32,89,43]
   #layerlist=['maxpool','layer1[0]','layer1[1]','layer1[2]','layer2[0]','layer2[1]','layer2[2]','layer2[3]','layer3[0]','layer3[1]','layer3[2]','layer3[3]','layer3[4]','layer3[5]','layer4[0]','layer4[1]','layer4[2]','avgpool','fc']
   for key in layerlist:
@@ -606,24 +591,12 @@ for model_type in model_type_list:
           synth_data=s[k]
           a=natural_data[...]
           b=synth_data[...]
-          print('a.shape')
-          print(a.shape)
-          # pca=cuPCA(n_components=640)
           pca=PCA(random_state=seed)
-          # array=np.asfortranarray(a.reshape(640,-1))
-          # X_gpu=gpuarray.to_gpu(array)
-          # natural_x_pca = pca.fit_transform(X_gpu)
           natural_x_pca = pca.fit_transform(torch.tensor(a).cpu().detach().reshape(640,-1))
-          print('natural_x_pca.shape')
-          print(natural_x_pca.shape)
-          # array=np.asfortranarray(b.reshape(50,-1))
-          # X_gpu=gpuarray.to_gpu(array)
           synth_x_pca = pca.transform(torch.tensor(b).cpu().detach().reshape(neuron_target.shape[0],-1))
           kfold = KFold(n_splits=5, shuffle=True,random_state=seed)
           num_neuron=n1.shape[2]
           natural_prediction= np.empty((640,target.shape[1]), dtype=object)
-          print('natural_prediction.shape')
-          print(natural_prediction.shape)
           synth_prediction=np.empty((neuron_target.shape[0],neuron_target.shape[1]), dtype=object)
           for fold, (train_ids, test_ids) in enumerate(kfold.split(natural_x_pca)):
             clf = Ridge(random_state=seed)
@@ -659,9 +632,6 @@ for model_type in model_type_list:
             total_synth_corr=np.vstack([total_synth_corr,synth_corr_array])
             synth_score=np.median(synth_corr_array)
             synth_score_dict[k] =np.append(synth_score_dict[k],synth_score)
-          # natural_score_dict[k] = np.median(np.array([pearsonr(natural_prediction[:, i], target[:, i])[0] for i in range(natural_prediction.shape[-1])]))
-          # synth_score_dict[k] = np.median(np.array([pearsonr(synth_prediction[:, i], neuron_target[:, i])[0] for i in range(synth_prediction.shape[-1])]))
-
           print(natural_score_dict[k])
           print(synth_score_dict[k]) 
       print(cc)
