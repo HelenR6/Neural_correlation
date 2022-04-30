@@ -29,12 +29,12 @@ parser = argparse.ArgumentParser(description='Neural correlation')
 parser.add_argument('--session', type=str)
 parser.add_argument('--model_list',nargs="+")
 parser.add_argument('--neuro_wise')
-parser.add_argument('--model_name')
+# parser.add_argument('--model_name')
 args = parser.parse_args()
 session_name=args.session
 neuro_wise=args.neuro_wise
 model_type_list=args.model_list
-model_name=args.model_name
+# model_name=args.model_name
 print(args.neuro_wise)
 
 device='cpu'
@@ -494,12 +494,7 @@ for model_type in model_type_list:
   else:
     #layer list for resnet 50
     layerlist=['maxpool','layer1[0]','layer1[1]','layer1[2]','layer2[0]','layer2[1]','layer2[2]','layer2[3]','layer3[0]','layer3[1]','layer3[2]','layer3[3]','layer3[4]','layer3[5]','layer4[0]','layer4[1]','layer4[2]','avgpool','fc']
-  if model_name=="resnet":
-    x1=natural_perm_tensor
-    model=resnet
-  if model_name=="alexnet":
-    x1=natural_perm_tensor
-    model=alexnet
+  model=resnet
   activation={}
   def get_activation(name):
       def hook(model, input, output):
@@ -507,18 +502,18 @@ for model_type in model_type_list:
       return hook
   for layer in layerlist:
     if model_type=="clip":
-      exec(f"{model_name}.visual.{layer}.register_forward_hook(get_activation('{layer}'))")
+      exec(f"model.visual.{layer}.register_forward_hook(get_activation('{layer}'))")
     elif model_type=="linf_8" or model_type=="linf_4" or model_type=="l2_3" or model_type=='resnet50_l2_eps0.1' or model_type=='resnet50_l2_eps0.01' or model_type=='resnet50_l2_eps0.03' or model_type=='resnet50_l2_eps0.5' or model_type=='resnet50_l2_eps0.25' or model_type=='resnet50_l2_eps3' or model_type=='resnet50_l2_eps5' or model_type=='resnet50_l2_eps1' or model_type=='resnet50_l2_eps0.05':
-      exec(f"{model_name}.model.{layer}.register_forward_hook(get_activation('{layer}'))")
+      exec(f"model.model.{layer}.register_forward_hook(get_activation('{layer}'))")
     else:
-      exec(f"{model_name}.{layer}.register_forward_hook(get_activation('{layer}'))")
+      exec(f"model.{layer}.register_forward_hook(get_activation('{layer}'))")
   counter=0
-  for  minibatch in batch(x1,64):
+  for  minibatch in batch(natural_perm_tensor,64):
     print(counter)
     if model_type=="clip":
-      output=exec(f"{model_name}.visual(minibatch.to(device))")
+      output=exec(f"model.visual(minibatch.to(device))")
     else:
-      output=exec(f"{model_name}(minibatch.to(device))")
+      output=exec(f"model(minibatch.to(device))")
     if counter==0:
       with h5py.File(f'{model_type}_natural_layer_activation.hdf5','w')as f:
         for layer in layerlist:
@@ -534,12 +529,7 @@ for model_type in model_type_list:
     counter=counter+1
 
   # get activation for synthetic images
-  if model_name=="resnet":
-    x1=synth_perm_tensor
-    model=resnet
-  if model_name=="alexnet":
-    x1=synth_perm_tensor
-    model=alexnet
+
   activation={}
   def get_activation(name):
       def hook(model, input, output):
@@ -547,16 +537,16 @@ for model_type in model_type_list:
       return hook
   for layer in layerlist:
     if model_type=="clip":
-      exec(f"{model_name}.visual.{layer}.register_forward_hook(get_activation('{layer}'))")
+      exec(f"model.visual.{layer}.register_forward_hook(get_activation('{layer}'))")
     elif model_type=="linf_8" or model_type=="linf_4" or model_type=="l2_3" or model_type=='resnet50_l2_eps0.01' or model_type=='resnet50_l2_eps0.1' or model_type=='resnet50_l2_eps0.03' or model_type=='resnet50_l2_eps0.5' or model_type=='resnet50_l2_eps0.25' or model_type=='resnet50_l2_eps3' or model_type=='resnet50_l2_eps5' or model_type=='resnet50_l2_eps1' or model_type=='resnet50_l2_eps0.05':
-      exec(f"{model_name}.model.{layer}.register_forward_hook(get_activation('{layer}'))")
+      exec(f"model.model.{layer}.register_forward_hook(get_activation('{layer}'))")
     else:
-      exec(f"{model_name}.{layer}.register_forward_hook(get_activation('{layer}'))")
+      exec(f"model.{layer}.register_forward_hook(get_activation('{layer}'))")
   counter=0
   if model_type=="clip":
-    output=exec(f"{model_name}.visual(x1.to(device))")
+    output=exec(f"model.visual(synth_perm_tensor.to(device))")
   else:
-    output=exec(f"{model_name}(x1.to(device))")
+    output=exec(f"model(synth_perm_tensor.to(device))")
   if counter==0:
     with h5py.File(f'{model_type}_synth_layer_activation.hdf5','w')as f:
       for layer in layerlist:
