@@ -590,17 +590,17 @@ for model_type in model_type_list:
           natural_prediction= np.empty((640,target.shape[1]), dtype=object)
           synth_prediction=np.empty((neuron_target.shape[0],neuron_target.shape[1]), dtype=object)
           for fold, (train_ids, test_ids) in enumerate(kfold.split(natural_x_pca)):
-            clf = Ridge(random_state=seed)
+#             clf = Ridge(random_state=seed)
             pls=PLSRegression(n_components=25)
             pls.fit((natural_x_pca)[train_ids],target[train_ids])
             start=fold*10
             end=((fold+1)*10)
-            natural_prediction[test_ids]=clf.predict((natural_x_pca)[test_ids])
+            natural_prediction[test_ids]=pls.predict((natural_x_pca)[test_ids])
             # synth_prediction[start:end]=clf.predict((synth_x_pca)[start:end])
             if fold==0:
-              synth_prediction=clf.predict((synth_x_pca))
+              synth_prediction=pls.predict((synth_x_pca))
             else:
-              synth_prediction=synth_prediction+clf.predict((synth_x_pca))
+              synth_prediction=synth_prediction+pls.predict((synth_x_pca))
             if fold==4:
               synth_prediction=synth_prediction/5
 
