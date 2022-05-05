@@ -11,6 +11,7 @@ from PIL import Image
 import json
 import torch
 from sklearn.model_selection import KFold
+from sklearn.cross_decomposition import PLSRegression
 from sklearn.linear_model import Ridge
 from scipy.stats.stats import pearsonr
 from sklearn.decomposition import PCA
