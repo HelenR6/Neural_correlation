@@ -477,7 +477,7 @@ for model_type in model_type_list:
   neuro_wise=args.neuro_wise
   print(neuro_wise)
   if neuro_wise == 'True':
-    with open(f'/content/gdrive/MyDrive/V4/{session_name}/{model_type}_natural_mean.json') as json_file:
+    with open(f'/content/gdrive/MyDrive/V4/{session_name}/pls_{model_type}_natural_mean.json') as json_file:
       layerlist=[]
       load_data = json.load(json_file)
       json_acceptable_string = load_data.replace("'", "\"")
@@ -628,8 +628,8 @@ for model_type in model_type_list:
           print(synth_score_dict[k]) 
       print(cc)
       if neuro_wise=='True':
-        np.save(f'gdrive/MyDrive/V4/{session_name}/{model_type}_synth_neuron_corr.npy',total_synth_corr)
-        np.save(f'gdrive/MyDrive/V4/{session_name}/{model_type}_natural_neuron_corr.npy',total_natural_corr)
+        np.save(f'gdrive/MyDrive/V4/{session_name}/pls_{model_type}_synth_neuron_corr.npy',total_synth_corr)
+        np.save(f'gdrive/MyDrive/V4/{session_name}/pls_{model_type}_natural_neuron_corr.npy',total_natural_corr)
 
 
       else:
@@ -645,21 +645,21 @@ for model_type in model_type_list:
         print(natural_json)
         print(synth_json)
 
-        with open(f"gdrive/MyDrive/V4/{session_name}/{model_type}_natural.json", 'w') as f:
+        with open(f"gdrive/MyDrive/V4/{session_name}/pls_{model_type}_natural.json", 'w') as f:
           json.dump(natural_json, f)
-        with open(f"gdrive/MyDrive/V4/{session_name}/{model_type}_synth.json", 'w') as f:
+        with open(f"gdrive/MyDrive/V4/{session_name}/pls_{model_type}_synth.json", 'w') as f:
           json.dump(synth_json, f)
 
         natural_mean_dict = {k:  mean(v) for k, v in natural_score_dict.items()}
         synth_mean_dict = {k:  mean(v) for k, v in synth_score_dict.items()}
         json_object = json.dumps(natural_mean_dict, indent = 4) 
         print(json_object)
-        with open(f"gdrive/MyDrive/V4/{session_name}/{model_type}_natural_mean.json", 'w') as f:
+        with open(f"gdrive/MyDrive/V4/{session_name}/pls_{model_type}_natural_mean.json", 'w') as f:
           json.dump(json_object, f)
 
         json_object = json.dumps(synth_mean_dict, indent = 4) 
         print(json_object)
-        with open(f"gdrive/MyDrive/V4/{session_name}/{model_type}_synth_mean.json", 'w') as f:
+        with open(f"gdrive/MyDrive/V4/{session_name}/pls_{model_type}_synth_mean.json", 'w') as f:
           json.dump(json_object, f)
 
 
