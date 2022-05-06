@@ -116,6 +116,8 @@ for model_type in model_type_list:
     print(counter)
     if model_type=="clip":
       output=exec(f"model.visual(minibatch.to(device))")
+    elif model_type=='resnet50_l2_eps0.1' or model_type=='resnet50_l2_eps0.01' or model_type=='resnet50_l2_eps0.03' or model_type=='resnet50_l2_eps0.5' or model_type=='resnet50_l2_eps0.25' or model_type=='resnet50_l2_eps3' or model_type=='resnet50_l2_eps5' or model_type=='resnet50_l2_eps1' or model_type=='resnet50_l2_eps0.05':
+      output=exec(f"model.model(minibatch.to(device))")
     else:
       output=exec(f"model(minibatch.to(device))")
     if counter==0:
@@ -149,6 +151,8 @@ for model_type in model_type_list:
   counter=0
   if model_type=="clip":
     output=exec(f"model.visual(synth_image_tensor.to(device))")
+  elif model_type=='resnet50_l2_eps0.1' or model_type=='resnet50_l2_eps0.01' or model_type=='resnet50_l2_eps0.03' or model_type=='resnet50_l2_eps0.5' or model_type=='resnet50_l2_eps0.25' or model_type=='resnet50_l2_eps3' or model_type=='resnet50_l2_eps5' or model_type=='resnet50_l2_eps1' or model_type=='resnet50_l2_eps0.05':
+      output=exec(f"model.model(synth_image_tensor.to(device))")
   else:
     output=exec(f"model(synth_image_tensor.to(device))")
   if counter==0:
