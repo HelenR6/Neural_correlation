@@ -468,11 +468,11 @@ for model_type in model_type_list:
   print(synth_perm_tensor.shape)
 
   n1 = f.get('neural/naturalistic/monkey_'+final_path)[:]
-  target=np.mean(n1, axis=0)
-  print(target.shape)
+  natural_neuron_target=np.mean(n1, axis=0)
+  print(natural_neuron_target.shape)
   n2=f.get('neural/synthetic/monkey_'+final_path)[:]
-  neuron_target=np.mean(n2, axis=0)
-  print(neuron_target.shape)
+  synth_neuron_target=np.mean(n2, axis=0)
+  print(synth_neuron_target.shape)
   neuro_wise=args.neuro_wise
   print(neuro_wise)
   if neuro_wise == 'True':
@@ -582,15 +582,15 @@ for model_type in model_type_list:
           a=natural_data[...]
           b=synth_data[...]
           pca=PCA(random_state=seed)
-          natural_x_pca = pca.fit_transform(torch.tensor(a).cpu().detach().reshape(target.shape[0],-1))
-          synth_x_pca = pca.transform(torch.tensor(b).cpu().detach().reshape(neuron_target.shape[0],-1))
+          natural_x_pca = pca.fit_transform(torch.tensor(a).cpu().detach().reshape(natural_neuron_target.shape[0],-1))
+          synth_x_pca = pca.transform(torch.tensor(b).cpu().detach().reshape(synth_neuron_target.shape[0],-1))
           kfold = KFold(n_splits=5, shuffle=True,random_state=seed)
           num_neuron=n1.shape[2]
-          natural_prediction= np.empty((target.shape[0],target.shape[1]), dtype=object)
-          synth_prediction=np.empty((neuron_target.shape[0],neuron_target.shape[1]), dtype=object)
+          natural_prediction= np.empty((natural_neuron_target.shape[0],natural_neuron_target.shape[1]), dtype=object)
+          synth_prediction=np.empty((synth_neuron_target.shape[0],synth_neuron_target.shape[1]), dtype=object)
           for fold, (train_ids, test_ids) in enumerate(kfold.split(natural_x_pca)):
             clf = Ridge(random_state=seed)
-            clf.fit((natural_x_pca)[train_ids],target[train_ids])
+            clf.fit((natural_x_pca)[train_ids],natural_neuron_target[train_ids])
             start=fold*10
             end=((fold+1)*10)
             natural_prediction[test_ids]=clf.predict((natural_x_pca)[test_ids])
@@ -603,22 +603,22 @@ for model_type in model_type_list:
               synth_prediction=synth_prediction/5
 
           if natural_score_dict[k] is None:
-            natural_corr_array= np.array([pearsonr(natural_prediction[:, i], target[:, i])[0] for i in range(natural_prediction.shape[-1])])
+            natural_corr_array= np.array([pearsonr(natural_prediction[:, i], natural_neuron_target[:, i])[0] for i in range(natural_prediction.shape[-1])])
             total_natural_corr=natural_corr_array
             natural_score_dict[k] = np.median(natural_corr_array)
             cc=cc+1
           else:
-            natural_corr_array= np.array([pearsonr(natural_prediction[:, i], target[:, i])[0] for i in range(natural_prediction.shape[-1])])
+            natural_corr_array= np.array([pearsonr(natural_prediction[:, i], natural_neuron_target[:, i])[0] for i in range(natural_prediction.shape[-1])])
             total_natural_corr=np.vstack([total_natural_corr,natural_corr_array])
             natural_score=np.median(natural_corr_array)
             natural_score_dict[k] =np.append(natural_score_dict[k],natural_score)
             cc=cc+1
           if synth_score_dict[k] is None:
-            synth_corr_array=np.array([pearsonr(synth_prediction[:, i], neuron_target[:, i])[0] for i in range(synth_prediction.shape[-1])])
+            synth_corr_array=np.array([pearsonr(synth_prediction[:, i], synth_neuron_target[:, i])[0] for i in range(synth_prediction.shape[-1])])
             total_synth_corr=synth_corr_array
             synth_score_dict[k] = np.median(synth_corr_array)
           else:
-            synth_corr_array=np.array([pearsonr(synth_prediction[:, i], neuron_target[:, i])[0] for i in range(synth_prediction.shape[-1])])
+            synth_corr_array=np.array([pearsonr(synth_prediction[:, i], synth_neuron_target[:, i])[0] for i in range(synth_prediction.shape[-1])])
             total_synth_corr=np.vstack([total_synth_corr,synth_corr_array])
             synth_score=np.median(synth_corr_array)
             synth_score_dict[k] =np.append(synth_score_dict[k],synth_score)
