@@ -582,11 +582,11 @@ for model_type in model_type_list:
           a=natural_data[...]
           b=synth_data[...]
           pca=PCA(random_state=seed)
-          natural_x_pca = pca.fit_transform(torch.tensor(a).cpu().detach().reshape(640,-1))
+          natural_x_pca = pca.fit_transform(torch.tensor(a).cpu().detach().reshape(target.shape[0],-1))
           synth_x_pca = pca.transform(torch.tensor(b).cpu().detach().reshape(neuron_target.shape[0],-1))
           kfold = KFold(n_splits=5, shuffle=True,random_state=seed)
           num_neuron=n1.shape[2]
-          natural_prediction= np.empty((640,target.shape[1]), dtype=object)
+          natural_prediction= np.empty((target.shape[0],target.shape[1]), dtype=object)
           synth_prediction=np.empty((neuron_target.shape[0],neuron_target.shape[1]), dtype=object)
           for fold, (train_ids, test_ids) in enumerate(kfold.split(natural_x_pca)):
             clf = Ridge(random_state=seed)
