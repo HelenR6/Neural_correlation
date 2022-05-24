@@ -121,11 +121,11 @@ for model_type in model_type_list:
     else:
       output=exec(f"model(minibatch.to(device))")
     if counter==0:
-      with h5py.File(f'{model_type}_natural_layer_activation.hdf5','w')as f:
+      with h5py.File(f'{args.neuro_wise}_{model_type}_natural_layer_activation.hdf5','w')as f:
         for layer in layerlist:
           dset=f.create_dataset(layer,data=activation[layer].cpu().detach().numpy())
     else:
-      with h5py.File(f'{model_type}_natural_layer_activation.hdf5','r+')as f:
+      with h5py.File(f'{args.neuro_wise}_{model_type}_natural_layer_activation.hdf5','r+')as f:
         for k,v in activation.items():
           print(k)
           data = f[k]
@@ -156,11 +156,11 @@ for model_type in model_type_list:
   else:
     output=exec(f"model(synth_image_tensor.to(device))")
   if counter==0:
-    with h5py.File(f'{model_type}_synth_layer_activation.hdf5','w')as f:
+    with h5py.File(f'{args.neuro_wise}_{model_type}_synth_layer_activation.hdf5','w')as f:
       for layer in layerlist:
         dset=f.create_dataset(layer,data=activation[layer].cpu().detach().numpy())
   else:
-    with h5py.File(f'{model_type}_synth_layer_activation.hdf5','r+')as f:
+    with h5py.File(f'{args.neuro_wise}_{model_type}_synth_layer_activation.hdf5','r+')as f:
       for k,v in activation.items():
         print(k)
         data = f[k]
@@ -180,8 +180,8 @@ for model_type in model_type_list:
   total_synth_corr=[]
   total_natural_corr=[]
   cc=0
-  with h5py.File(f'{model_type}_synth_layer_activation.hdf5','r')as s:
-    with h5py.File(f'{model_type}_natural_layer_activation.hdf5','r')as f:
+  with h5py.File(f'{args.neuro_wise}_{model_type}_synth_layer_activation.hdf5','r')as s:
+    with h5py.File(f'{args.neuro_wise}_{model_type}_natural_layer_activation.hdf5','r')as f:
       for seed in random_list:
         for k in layerlist:
           print(k)
