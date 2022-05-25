@@ -51,13 +51,13 @@ for model_type in model_type_list:
   # load model
   resnet,preprocess=load_model(model_type)
   if "simclr" in model_type:
-    preprocess = transforms.Compose([
+    jitter_preprocess = transforms.Compose([
     transforms.Resize(230),
     transforms.CenterCrop(224),
     transforms.ToTensor()
     ])
   else:
-    preprocess = transforms.Compose([
+    jitter_preprocess = transforms.Compose([
     transforms.Resize(230),
     transforms.CenterCrop(224),
     transforms.ToTensor(),
@@ -77,7 +77,7 @@ for model_type in model_type_list:
  
   natural_image_tensor=torch.tensor(np.array([np.array(preprocess((Image.fromarray(i)).convert('RGB'))) for i in natural_data]))
 #   print(natural_image_tensor.shape)
-
+  jitter_natural_image_tensor=torch.tensor(np.array([np.array(jitter_preprocess((Image.fromarray(i)).convert('RGB'))) for i in natural_data]))
   synth_image_tensor=torch.tensor(np.array([np.array(preprocess((Image.fromarray(i)).convert('RGB'))) for i in synth_data]))
 #   print(synth_image_tensor.shape)
 
@@ -93,7 +93,7 @@ for model_type in model_type_list:
 
   
   if neuro_wise == 'True':
-    with open(f'/content/gdrive/MyDrive/V4/{session_name}/{model_type}_natural_mean.json') as json_file:
+    with open(f'/content/gdrive/MyDrive/V4/{session_name}/jitter_{model_type}_natural_mean.json') as json_file:
       layerlist=[]
       load_data = json.load(json_file)
       json_acceptable_string = load_data.replace("'", "\"")
@@ -137,6 +137,42 @@ for model_type in model_type_list:
     else:
       output=exec(f"model(minibatch.to(device))")
     if counter==0:
+      with h5py.File(f'{args.neuro_wise}_{model_type}_natural_layer_activation.hdf5','w')as f:
+        for layer in layerlist:
+          dset=f.create_dataset(layer,data=activation[layer].cpu().detach().numpy())
+    else:
+      with h5py.File(f'{args.neuro_wise}_{model_type}_natural_layer_activation.hdf5','r+')as f:
+        for k,v in activation.items():
+          print(k)
+          data = f[k]
+          a=data[...]
+          del f[k]
+          dset=f.create_dataset(k,data=np.concatenate((a,activation[k].cpu().detach().numpy()),axis=0))
+    counter=counter+1
+  model=resnet
+  activation={}
+  def get_activation(name):
+      def hook(model, input, output):
+          activation[name] = output.detach()
+      return hook
+  # get activation
+  for layer in layerlist:
+    if model_type=="clip":
+      exec(f"model.visual.{layer}.register_forward_hook(get_activation('{layer}'))")
+    # elif model_type=="linf_8" or model_type=="linf_4" or model_type=="l2_3" or model_type=='resnet50_l2_eps0.1' or model_type=='resnet50_l2_eps0.01' or model_type=='resnet50_l2_eps0.03' or model_type=='resnet50_l2_eps0.5' or model_type=='resnet50_l2_eps0.25' or model_type=='resnet50_l2_eps3' or model_type=='resnet50_l2_eps5' or model_type=='resnet50_l2_eps1' or model_type=='resnet50_l2_eps0.05':
+    #   exec(f"model.model.{layer}.register_forward_hook(get_activation('{layer}'))")
+    else:
+      exec(f"model.{layer}.register_forward_hook(get_activation('{layer}'))")
+  counter=0
+  for  minibatch in batch(jitter_natural_image_tensor,64):
+    print(counter)
+    if model_type=="clip":
+      output=exec(f"model.visual(minibatch.to(device))")
+    elif model_type=='resnet50_l2_eps0.1' or model_type=='resnet50_l2_eps0.01' or model_type=='resnet50_l2_eps0.03' or model_type=='resnet50_l2_eps0.5' or model_type=='resnet50_l2_eps0.25' or model_type=='resnet50_l2_eps3' or model_type=='resnet50_l2_eps5' or model_type=='resnet50_l2_eps1' or model_type=='resnet50_l2_eps0.05':
+      output=exec(f"model.model(minibatch.to(device))")
+    else:
+      output=exec(f"model(minibatch.to(device))")
+    if counter==0:
       with h5py.File(f'jitter_{args.neuro_wise}_{model_type}_natural_layer_activation.hdf5','w')as f:
         for layer in layerlist:
           dset=f.create_dataset(layer,data=activation[layer].cpu().detach().numpy())
@@ -151,7 +187,7 @@ for model_type in model_type_list:
     counter=counter+1
 
   # get activation for synthetic images
-
+  model=resnet
   activation={}
   def get_activation(name):
       def hook(model, input, output):
@@ -172,11 +208,11 @@ for model_type in model_type_list:
   else:
     output=exec(f"model(synth_image_tensor.to(device))")
   if counter==0:
-    with h5py.File(f'jitter_{args.neuro_wise}_{model_type}_synth_layer_activation.hdf5','w')as f:
+    with h5py.File(f'{args.neuro_wise}_{model_type}_synth_layer_activation.hdf5','w')as f:
       for layer in layerlist:
         dset=f.create_dataset(layer,data=activation[layer].cpu().detach().numpy())
   else:
-    with h5py.File(f'jitter_{args.neuro_wise}_{model_type}_synth_layer_activation.hdf5','r+')as f:
+    with h5py.File(f'{args.neuro_wise}_{model_type}_synth_layer_activation.hdf5','r+')as f:
       for k,v in activation.items():
         print(k)
         data = f[k]
@@ -196,8 +232,9 @@ for model_type in model_type_list:
   total_synth_corr=[]
   total_natural_corr=[]
   cc=0
-  with h5py.File(f'jitter_{args.neuro_wise}_{model_type}_synth_layer_activation.hdf5','r')as s:
-    with h5py.File(f'jitter_{args.neuro_wise}_{model_type}_natural_layer_activation.hdf5','r')as f:
+  with h5py.File(f'{args.neuro_wise}_{model_type}_synth_layer_activation.hdf5','r')as s:
+    with h5py.File(f'{args.neuro_wise}_{model_type}_natural_layer_activation.hdf5','r')as f:
+      
       for seed in random_list:
         for k in layerlist:
           print(k)
