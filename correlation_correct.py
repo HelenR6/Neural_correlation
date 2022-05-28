@@ -93,7 +93,7 @@ for model_type in model_type_list:
 
   
   if neuro_wise == 'True':
-    with open(f'/content/gdrive/MyDrive/V4/{session_name}/{model_type}_natural_mean.json') as json_file:
+    with open(f'/content/gdrive/MyDrive/V4/{session_name}/correct_{model_type}_natural_mean.json') as json_file:
       layerlist=[]
       load_data = json.load(json_file)
       json_acceptable_string = load_data.replace("'", "\"")
