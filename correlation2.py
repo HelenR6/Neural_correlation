@@ -23,7 +23,7 @@ parser = argparse.ArgumentParser(description='Neural correlation')
 parser.add_argument('--session', type=str)
 parser.add_argument('--model_list',nargs="+")
 parser.add_argument('--neuro_wise')
-parser.add_argument('--model_name')
+parser.add_argument('--model_name',default="resnet")
 parser.add_argument('--base_model', type=str)
 args = parser.parse_args()
 session_name=args.session
