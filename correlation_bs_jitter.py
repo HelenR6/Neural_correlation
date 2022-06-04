@@ -5,6 +5,7 @@ import torch
 import matplotlib.pyplot as plt
 from torchvision import transforms          
 import torchvision.models as models
+from sklearn.cross_decomposition import PLSRegression
 import torch 
 import torch.nn as nn
 from PIL import Image
@@ -252,13 +253,15 @@ for model_type in model_type_list:
             natural_prediction= np.empty((natural_neuron_target.shape[0],natural_neuron_target.shape[1]), dtype=object)
             synth_prediction=np.empty((synth_neuron_target.shape[0],synth_neuron_target.shape[1]), dtype=object)
             for fold, (train_ids, test_ids) in enumerate(kfold.split(natural_x_pca)):
-              clf = Ridge(random_state=seed)
-              clf.fit((natural_jitter_x_pca)[train_ids],natural_neuron_target[train_ids])
-              natural_prediction[test_ids]=clf.predict((natural_x_pca)[test_ids])
+#               clf = Ridge(random_state=seed)
+#               clf.fit((natural_jitter_x_pca)[train_ids],natural_neuron_target[train_ids])
+              pls=PLSRegression(n_components=25,scale=False)
+              pls.fit((natural_jitter_x_pca)[train_ids],natural_neuron_target[train_ids])
+              natural_prediction[test_ids]=pls.predict((natural_x_pca)[test_ids])
               if fold==0:
-                synth_prediction=clf.predict((synth_x_pca))
+                synth_prediction=pls.predict((synth_x_pca))
               else:
-                synth_prediction=synth_prediction+clf.predict((synth_x_pca))
+                synth_prediction=synth_prediction+pls.predict((synth_x_pca))
               if fold==4:
                 synth_prediction=synth_prediction/5
 
@@ -286,8 +289,8 @@ for model_type in model_type_list:
             print(synth_score_dict[k]) 
         print(cc)
         if neuro_wise=='True':
-          np.save(f'gdrive/MyDrive/V4/{session_name}/jitter_{model_type}_synth_neuron_corr.npy',total_synth_corr)
-          np.save(f'gdrive/MyDrive/V4/{session_name}/jitter_{model_type}_natural_neuron_corr.npy',total_natural_corr)
+          np.save(f'gdrive/MyDrive/V4/{session_name}/pls_jitter_{model_type}_synth_neuron_corr.npy',total_synth_corr)
+          np.save(f'gdrive/MyDrive/V4/{session_name}/pls_jitter_{model_type}_natural_neuron_corr.npy',total_natural_corr)
 
 
         else:
