@@ -96,7 +96,7 @@ for model_type in model_type_list:
   
   if neuro_wise == 'True':
     if model_type=="alexnet":
-        with open(f'/content/gdrive/MyDrive/V4/{session_name}/{model_type}_natural_mean.json') as json_file:
+        with open(f'/content/gdrive/MyDrive/V4/{session_name}/pls_jitter_{model_type}_natural_mean.json') as json_file:
           layerlist=[]
           load_data = json.load(json_file)
           json_acceptable_string = load_data.replace("'", "\"")
@@ -105,7 +105,7 @@ for model_type in model_type_list:
           max_natural_layer=max(d, key=d.get)
           layerlist.append(max_natural_layer)
     else:
-        with open(f'/content/gdrive/MyDrive/V4/{session_name}/pls_jitter_{model_type}_natural_mean.json') as json_file:
+        with open(f'/content/gdrive/MyDrive/V4/{session_name}/{model_type}_natural_mean.json') as json_file:
           layerlist=[]
           load_data = json.load(json_file)
           json_acceptable_string = load_data.replace("'", "\"")
