@@ -93,7 +93,7 @@ for model_type in model_type_list:
 
   
   if neuro_wise == 'True':
-    with open(f'/content/gdrive/MyDrive/V4/{session_name}/jitter_{model_type}_natural_mean.json') as json_file:
+    with open(f'/content/gdrive/MyDrive/V4/{session_name}/pls_jitter_{model_type}_natural_mean.json') as json_file:
       layerlist=[]
       load_data = json.load(json_file)
       json_acceptable_string = load_data.replace("'", "\"")
@@ -303,21 +303,21 @@ for model_type in model_type_list:
           print(natural_json)
           print(synth_json)
 
-          with open(f"gdrive/MyDrive/V4/{session_name}/jitter_{model_type}_natural.json", 'w') as f:
+          with open(f"gdrive/MyDrive/V4/{session_name}/pls_jitter_{model_type}_natural.json", 'w') as f:
             json.dump(natural_json, f)
-          with open(f"gdrive/MyDrive/V4/{session_name}/jitter_{model_type}_synth.json", 'w') as f:
+          with open(f"gdrive/MyDrive/V4/{session_name}/pls_jitter_{model_type}_synth.json", 'w') as f:
             json.dump(synth_json, f)
 
           natural_mean_dict = {k:  mean(v) for k, v in natural_score_dict.items()}
           synth_mean_dict = {k:  mean(v) for k, v in synth_score_dict.items()}
           json_object = json.dumps(natural_mean_dict, indent = 4) 
           print(json_object)
-          with open(f"gdrive/MyDrive/V4/{session_name}/jitter_{model_type}_natural_mean.json", 'w') as f:
+          with open(f"gdrive/MyDrive/V4/{session_name}/pls_jitter_{model_type}_natural_mean.json", 'w') as f:
             json.dump(json_object, f)
 
           json_object = json.dumps(synth_mean_dict, indent = 4) 
           print(json_object)
-          with open(f"gdrive/MyDrive/V4/{session_name}/jitter_{model_type}_synth_mean.json", 'w') as f:
+          with open(f"gdrive/MyDrive/V4/{session_name}/pls_jitter_{model_type}_synth_mean.json", 'w') as f:
             json.dump(json_object, f)
 
 
