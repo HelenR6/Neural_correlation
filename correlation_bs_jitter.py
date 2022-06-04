@@ -95,14 +95,24 @@ for model_type in model_type_list:
 
   
   if neuro_wise == 'True':
-    with open(f'/content/gdrive/MyDrive/V4/{session_name}/{model_type}_natural_mean.json') as json_file:
-      layerlist=[]
-      load_data = json.load(json_file)
-      json_acceptable_string = load_data.replace("'", "\"")
-      d = json.loads(json_acceptable_string)
-      # get the best layer
-      max_natural_layer=max(d, key=d.get)
-      layerlist.append(max_natural_layer)
+    if model_type=="alexnet":
+        with open(f'/content/gdrive/MyDrive/V4/{session_name}/{model_type}_natural_mean.json') as json_file:
+          layerlist=[]
+          load_data = json.load(json_file)
+          json_acceptable_string = load_data.replace("'", "\"")
+          d = json.loads(json_acceptable_string)
+          # get the best layer
+          max_natural_layer=max(d, key=d.get)
+          layerlist.append(max_natural_layer)
+    else:
+        with open(f'/content/gdrive/MyDrive/V4/{session_name}/pls_jitter_{model_type}_natural_mean.json') as json_file:
+          layerlist=[]
+          load_data = json.load(json_file)
+          json_acceptable_string = load_data.replace("'", "\"")
+          d = json.loads(json_acceptable_string)
+          # get the best layer
+          max_natural_layer=max(d, key=d.get)
+          layerlist.append(max_natural_layer)
   else:
     if model_type=="clip":
         layerlist=['avgpool','relu','layer1[0]','layer1[1]','layer1[2]','layer2[0]','layer2[1]','layer2[2]','layer2[3]','layer3[0]','layer3[1]','layer3[2]','layer3[3]','layer3[4]','layer3[5]','layer4[0]','layer4[1]','layer4[2]','attnpool']
