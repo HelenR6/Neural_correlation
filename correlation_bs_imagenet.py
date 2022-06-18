@@ -78,7 +78,7 @@ for index in indices:
     #     image = np.array(f['val/images'][index])
     #     Image.fromarray(image).save(imagepath)
     filepaths.append(imagepath)
-IN_image_tensor=torch.tensor(np.array([np.array(preprocess(Image.open(image_filepath).copy())) for image_filepath in filepaths]))
+#IN_image_tensor=torch.tensor(np.array([np.array(preprocess(Image.open(image_filepath).copy())) for image_filepath in filepaths]))
 for model_type in model_type_list:
   resnet,preprocess=load_model(model_type)
   IN_image_tensor=torch.tensor(np.array([np.array(preprocess(Image.open(image_filepath).copy())) for image_filepath in filepaths]))
