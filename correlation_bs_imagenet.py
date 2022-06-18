@@ -238,7 +238,7 @@ for model_type in model_type_list:
   total_synth_corr=[]
   total_natural_corr=[]
   cc=0
-  with h5py.File(f'{args.neuro_wise}_{model_type}_synth_layer_activation.hdf5','r')as m:
+  with h5py.File(f'{args.neuro_wise}_{model_type}_imagenet_layer_activation.hdf5','r')as m:
     with h5py.File(f'{args.neuro_wise}_{model_type}_synth_layer_activation.hdf5','r')as s:
         with h5py.File(f'{args.neuro_wise}_{model_type}_natural_layer_activation.hdf5','r')as f:
             for seed in random_list:
