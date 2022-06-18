@@ -240,94 +240,94 @@ for model_type in model_type_list:
   with h5py.File(f'{args.neuro_wise}_{model_type}_synth_layer_activation.hdf5','r')as m:
     with h5py.File(f'{args.neuro_wise}_{model_type}_synth_layer_activation.hdf5','r')as s:
         with h5py.File(f'{args.neuro_wise}_{model_type}_natural_layer_activation.hdf5','r')as f:
-        for seed in random_list:
-            for k in layerlist:
-            print(k)
-            imagenet_data=m[k]
-            natural_data = f[k]
-            synth_data=s[k]
-            a=natural_data[...]
-            b=synth_data[...]
-            c=imagenet_data[...]
-            pca=PCA(random_state=seed)
-            pca.fit(torch.tensor(c).cpu().detach().reshape(1000,-1))
-            natural_x_pca = pca.transform(torch.tensor(a).cpu().detach().reshape(640,-1))
-            synth_x_pca = pca.transform(torch.tensor(b).cpu().detach().reshape(neuron_target.shape[0],-1))
-            kfold = KFold(n_splits=10, shuffle=True,random_state=seed)
-            num_neuron=n1.shape[2]
-            natural_prediction= np.empty((640,target.shape[1]), dtype=object)
-            synth_prediction=np.empty((neuron_target.shape[0],neuron_target.shape[1]), dtype=object)
-            for fold, (train_ids, test_ids) in enumerate(kfold.split(natural_x_pca)):
-    #             clf = Ridge(random_state=seed)
-                pls=PLSRegression(n_components=25,scale=False)
-                pls.fit((natural_x_pca)[train_ids],target[train_ids])
-                start=fold*10
-                end=((fold+1)*10)
-                natural_prediction[test_ids]=pls.predict((natural_x_pca)[test_ids])
-                # synth_prediction[start:end]=clf.predict((synth_x_pca)[start:end])
-                if fold==0:
-                synth_prediction=pls.predict((synth_x_pca))
+            for seed in random_list:
+                for k in layerlist:
+                print(k)
+                imagenet_data=m[k]
+                natural_data = f[k]
+                synth_data=s[k]
+                a=natural_data[...]
+                b=synth_data[...]
+                c=imagenet_data[...]
+                pca=PCA(random_state=seed)
+                pca.fit(torch.tensor(c).cpu().detach().reshape(1000,-1))
+                natural_x_pca = pca.transform(torch.tensor(a).cpu().detach().reshape(640,-1))
+                synth_x_pca = pca.transform(torch.tensor(b).cpu().detach().reshape(neuron_target.shape[0],-1))
+                kfold = KFold(n_splits=10, shuffle=True,random_state=seed)
+                num_neuron=n1.shape[2]
+                natural_prediction= np.empty((640,target.shape[1]), dtype=object)
+                synth_prediction=np.empty((neuron_target.shape[0],neuron_target.shape[1]), dtype=object)
+                for fold, (train_ids, test_ids) in enumerate(kfold.split(natural_x_pca)):
+        #             clf = Ridge(random_state=seed)
+                    pls=PLSRegression(n_components=25,scale=False)
+                    pls.fit((natural_x_pca)[train_ids],target[train_ids])
+                    start=fold*10
+                    end=((fold+1)*10)
+                    natural_prediction[test_ids]=pls.predict((natural_x_pca)[test_ids])
+                    # synth_prediction[start:end]=clf.predict((synth_x_pca)[start:end])
+                    if fold==0:
+                    synth_prediction=pls.predict((synth_x_pca))
+                    else:
+                    synth_prediction=synth_prediction+pls.predict((synth_x_pca))
+                    if fold==4:
+                    synth_prediction=synth_prediction/5
+
+                if natural_score_dict[k] is None:
+                    natural_corr_array= np.array([pearsonr(natural_prediction[:, i], target[:, i])[0] for i in range(natural_prediction.shape[-1])])
+                    total_natural_corr=natural_corr_array
+                    natural_score_dict[k] = np.median(natural_corr_array)
+                    cc=cc+1
                 else:
-                synth_prediction=synth_prediction+pls.predict((synth_x_pca))
-                if fold==4:
-                synth_prediction=synth_prediction/5
+                    natural_corr_array= np.array([pearsonr(natural_prediction[:, i], target[:, i])[0] for i in range(natural_prediction.shape[-1])])
+                    total_natural_corr=np.vstack([total_natural_corr,natural_corr_array])
+                    natural_score=np.median(natural_corr_array)
+                    natural_score_dict[k] =np.append(natural_score_dict[k],natural_score)
+                    cc=cc+1
+                if synth_score_dict[k] is None:
+                    synth_corr_array=np.array([pearsonr(synth_prediction[:, i], neuron_target[:, i])[0] for i in range(synth_prediction.shape[-1])])
+                    total_synth_corr=synth_corr_array
+                    synth_score_dict[k] = np.median(synth_corr_array)
+                else:
+                    synth_corr_array=np.array([pearsonr(synth_prediction[:, i], neuron_target[:, i])[0] for i in range(synth_prediction.shape[-1])])
+                    total_synth_corr=np.vstack([total_synth_corr,synth_corr_array])
+                    synth_score=np.median(synth_corr_array)
+                    synth_score_dict[k] =np.append(synth_score_dict[k],synth_score)
+                print(natural_score_dict[k])
+                print(synth_score_dict[k]) 
+            print(cc)
+            if neuro_wise=='True':
+                np.save(f'gdrive/MyDrive/V4/{session_name}/pls_IN_pca_{model_type}_synth_neuron_corr.npy',total_synth_corr)
+                np.save(f'gdrive/MyDrive/V4/{session_name}/pls_IN_pca_{model_type}_natural_neuron_corr.npy',total_natural_corr)
 
-            if natural_score_dict[k] is None:
-                natural_corr_array= np.array([pearsonr(natural_prediction[:, i], target[:, i])[0] for i in range(natural_prediction.shape[-1])])
-                total_natural_corr=natural_corr_array
-                natural_score_dict[k] = np.median(natural_corr_array)
-                cc=cc+1
+
             else:
-                natural_corr_array= np.array([pearsonr(natural_prediction[:, i], target[:, i])[0] for i in range(natural_prediction.shape[-1])])
-                total_natural_corr=np.vstack([total_natural_corr,natural_corr_array])
-                natural_score=np.median(natural_corr_array)
-                natural_score_dict[k] =np.append(natural_score_dict[k],natural_score)
-                cc=cc+1
-            if synth_score_dict[k] is None:
-                synth_corr_array=np.array([pearsonr(synth_prediction[:, i], neuron_target[:, i])[0] for i in range(synth_prediction.shape[-1])])
-                total_synth_corr=synth_corr_array
-                synth_score_dict[k] = np.median(synth_corr_array)
-            else:
-                synth_corr_array=np.array([pearsonr(synth_prediction[:, i], neuron_target[:, i])[0] for i in range(synth_prediction.shape[-1])])
-                total_synth_corr=np.vstack([total_synth_corr,synth_corr_array])
-                synth_score=np.median(synth_corr_array)
-                synth_score_dict[k] =np.append(synth_score_dict[k],synth_score)
-            print(natural_score_dict[k])
-            print(synth_score_dict[k]) 
-        print(cc)
-        if neuro_wise=='True':
-            np.save(f'gdrive/MyDrive/V4/{session_name}/pls_IN_pca_{model_type}_synth_neuron_corr.npy',total_synth_corr)
-            np.save(f'gdrive/MyDrive/V4/{session_name}/pls_IN_pca_{model_type}_natural_neuron_corr.npy',total_natural_corr)
 
 
-        else:
+                from statistics import mean
+                new_natural_score_dict = {k:  v.tolist() for k, v in natural_score_dict.items()}
+                new_synth_score_dict = {k:  v.tolist() for k, v in synth_score_dict.items()}
+                import json
+                # Serializing json  
+                synth_json = json.dumps(new_synth_score_dict, indent = 4) 
+                natural_json = json.dumps(new_natural_score_dict, indent = 4) 
+                print(natural_json)
+                print(synth_json)
 
+                with open(f"gdrive/MyDrive/V4/{session_name}/pls_{model_type}_natural.json", 'w') as f:
+                json.dump(natural_json, f)
+                with open(f"gdrive/MyDrive/V4/{session_name}/pls_{model_type}_synth.json", 'w') as f:
+                json.dump(synth_json, f)
 
-            from statistics import mean
-            new_natural_score_dict = {k:  v.tolist() for k, v in natural_score_dict.items()}
-            new_synth_score_dict = {k:  v.tolist() for k, v in synth_score_dict.items()}
-            import json
-            # Serializing json  
-            synth_json = json.dumps(new_synth_score_dict, indent = 4) 
-            natural_json = json.dumps(new_natural_score_dict, indent = 4) 
-            print(natural_json)
-            print(synth_json)
+                natural_mean_dict = {k:  mean(v) for k, v in natural_score_dict.items()}
+                synth_mean_dict = {k:  mean(v) for k, v in synth_score_dict.items()}
+                json_object = json.dumps(natural_mean_dict, indent = 4) 
+                print(json_object)
+                with open(f"gdrive/MyDrive/V4/{session_name}/pls_{model_type}_natural_mean.json", 'w') as f:
+                json.dump(json_object, f)
 
-            with open(f"gdrive/MyDrive/V4/{session_name}/pls_{model_type}_natural.json", 'w') as f:
-            json.dump(natural_json, f)
-            with open(f"gdrive/MyDrive/V4/{session_name}/pls_{model_type}_synth.json", 'w') as f:
-            json.dump(synth_json, f)
-
-            natural_mean_dict = {k:  mean(v) for k, v in natural_score_dict.items()}
-            synth_mean_dict = {k:  mean(v) for k, v in synth_score_dict.items()}
-            json_object = json.dumps(natural_mean_dict, indent = 4) 
-            print(json_object)
-            with open(f"gdrive/MyDrive/V4/{session_name}/pls_{model_type}_natural_mean.json", 'w') as f:
-            json.dump(json_object, f)
-
-            json_object = json.dumps(synth_mean_dict, indent = 4) 
-            print(json_object)
-            with open(f"gdrive/MyDrive/V4/{session_name}/pls_{model_type}_synth_mean.json", 'w') as f:
-            json.dump(json_object, f)
+                json_object = json.dumps(synth_mean_dict, indent = 4) 
+                print(json_object)
+                with open(f"gdrive/MyDrive/V4/{session_name}/pls_{model_type}_synth_mean.json", 'w') as f:
+                json.dump(json_object, f)
 
 
