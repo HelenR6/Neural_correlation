@@ -301,8 +301,8 @@ for model_type in model_type_list:
                     print(synth_score_dict[k]) 
                 print(cc)
                 if neuro_wise=='True':
-                    np.save(f'gdrive/MyDrive/V4/{session_name}/pls_IN_pca_{model_type}_synth_neuron_corr.npy',total_synth_corr)
-                    np.save(f'gdrive/MyDrive/V4/{session_name}/pls_IN_pca_{model_type}_natural_neuron_corr.npy',total_natural_corr)
+                    np.save(f'gdrive/MyDrive/V4/{session_name}/pls_IN_pca_640_{model_type}_synth_neuron_corr.npy',total_synth_corr)
+                    np.save(f'gdrive/MyDrive/V4/{session_name}/pls_IN_pca_640_{model_type}_natural_neuron_corr.npy',total_natural_corr)
 
 
                 else:
