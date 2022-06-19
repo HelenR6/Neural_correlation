@@ -585,7 +585,7 @@ for model_type in model_type_list:
           pca=PCA(random_state=seed)
           natural_x_pca = pca.fit_transform(torch.tensor(a).cpu().detach().reshape(640,-1))
           synth_x_pca = pca.transform(torch.tensor(b).cpu().detach().reshape(neuron_target.shape[0],-1))
-          kfold = KFold(n_splits=5, shuffle=True,random_state=seed)
+          kfold = KFold(n_splits=10, shuffle=True,random_state=seed)
           num_neuron=n1.shape[2]
           natural_prediction= np.empty((640,target.shape[1]), dtype=object)
           synth_prediction=np.empty((neuron_target.shape[0],neuron_target.shape[1]), dtype=object)
@@ -601,8 +601,8 @@ for model_type in model_type_list:
               synth_prediction=pls.predict((synth_x_pca))
             else:
               synth_prediction=synth_prediction+pls.predict((synth_x_pca))
-            if fold==4:
-              synth_prediction=synth_prediction/5
+            if fold==9:
+              synth_prediction=synth_prediction/10
 
           if natural_score_dict[k] is None:
             natural_corr_array= np.array([pearsonr(natural_prediction[:, i], target[:, i])[0] for i in range(natural_prediction.shape[-1])])
