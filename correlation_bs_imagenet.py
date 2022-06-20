@@ -314,7 +314,9 @@ for model_type in model_type_list:
                     if neuro_wise=='True':
                         np.save(f'gdrive/MyDrive/V4/{session_name}/pls_IN_pca_{model_type}_synth_neuron_corr.npy',total_synth_corr)
                         np.save(f'gdrive/MyDrive/V4/{session_name}/pls_IN_pca_{model_type}_natural_neuron_corr.npy',total_natural_corr)
-
+                        os.remove(f'{args.neuro_wise}_{model_type}_natural_layer_activation.hdf5')
+                        os.remove(f'{args.neuro_wise}_{model_type}_synth_layer_activation.hdf5')
+                        os.remove(f'{args.neuro_wise}_{model_type}_imagenet_layer_activation.hdf5')
 
                     else:
 
