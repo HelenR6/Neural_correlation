@@ -32,6 +32,7 @@ parser.add_argument('--session', type=str)
 parser.add_argument('--model_list',nargs="+")
 parser.add_argument('--neuro_wise')
 # parser.add_argument('--model_name')
+parser.add_argument('--base_model')
 args = parser.parse_args()
 session_name=args.session
 neuro_wise=args.neuro_wise
