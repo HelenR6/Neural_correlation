@@ -83,6 +83,7 @@ for index in indices:
 for model_type in model_type_list:
   print(model_type)
   if os.path.exists('gdrive/MyDrive/V4/{session_name}/pls_IN_pca_{model_type}_natural_neuron_corr.npy'):
+    print("exists")
     continue
   resnet,preprocess=load_model(model_type)
   IN_image_tensor=torch.tensor(np.array([np.array(preprocess(Image.open(image_filepath).copy())) for image_filepath in filepaths]))
