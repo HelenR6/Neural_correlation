@@ -82,8 +82,9 @@ for index in indices:
 #IN_image_tensor=torch.tensor(np.array([np.array(preprocess(Image.open(image_filepath).copy())) for image_filepath in filepaths]))
 for model_type in model_type_list:
   print(model_type)
-  if not os.path.exists('gdrive/MyDrive/V4/{session_name}/pls_IN_pca_{model_type}_natural_neuron_corr.npy'):
-#     print("exists")
+
+  if not os.path.exists(f'/content/gdrive/MyDrive/V4/{session_name}/pls_IN_pca_{model_type}_natural_neuron_corr.npy'):
+      print("not exists")
 #     continue
       resnet,preprocess=load_model(model_type)
       IN_image_tensor=torch.tensor(np.array([np.array(preprocess(Image.open(image_filepath).copy())) for image_filepath in filepaths]))
@@ -218,7 +219,7 @@ for model_type in model_type_list:
       for layer in layerlist:
         if model_type=="clip":
           exec(f"model.visual.{layer}.register_forward_hook(get_activation('{layer}'))")
-        elif model_type=='resnet50_l2_eps0.01' or model_type=='resnet50_l2_eps0.1' or model_type=='resnet50_l2_eps0.03' or model_type=='resnet50_l2_eps0.5' or model_type=='resnet50_l2_eps0.25' or model_type=='resnet50_l2_eps3' or model_type=='resnet50_l2_eps5' or model_type=='resnet50_l2_eps1' or model_type=='resnet50_l2_eps0.05':
+        elif model_type=="linf_8" or model_type=="linf_4" or model_type=="l2_3" or model_type=='resnet50_l2_eps0.01' or model_type=='resnet50_l2_eps0.1' or model_type=='resnet50_l2_eps0.03' or model_type=='resnet50_l2_eps0.5' or model_type=='resnet50_l2_eps0.25' or model_type=='resnet50_l2_eps3' or model_type=='resnet50_l2_eps5' or model_type=='resnet50_l2_eps1' or model_type=='resnet50_l2_eps0.05':
           exec(f"model.model.{layer}.register_forward_hook(get_activation('{layer}'))")
         else:
           exec(f"model.{layer}.register_forward_hook(get_activation('{layer}'))")
