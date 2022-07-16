@@ -263,6 +263,19 @@ for model_type in model_type_list:
         print(json_object)
         with open(f"gdrive/MyDrive/IT/{domain_name}/{model_type}_synth_mean.json", 'w') as f:
           json.dump(json_object, f)
+        
+        natural_var_dict = {k:  variance(v) for k, v in natural_score_dict.items()}
+        synth_var_dict = {k:  variance(v) for k, v in synth_score_dict.items()}
+        json_object = json.dumps(natural_var_dict, indent = 4) 
+        print(json_object)
+        with open(f"gdrive/MyDrive/IT/{domain_name}/{model_type}_natural_var.json", 'w') as f:
+          json.dump(json_object, f)
+
+        json_object = json.dumps(synth_var_dict, indent = 4) 
+        print(json_object)
+        with open(f"gdrive/MyDrive/IT/{domain_name}/{model_type}_synth_var.json", 'w') as f:
+          json.dump(json_object, f)
+
 
 
 
