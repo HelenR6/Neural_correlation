@@ -31,6 +31,7 @@ parser = argparse.ArgumentParser(description='Neural correlation')
 parser.add_argument('--session', type=str)
 parser.add_argument('--model_list',nargs="+")
 parser.add_argument('--neuro_wise')
+parser.add_argument('--per_figure', type=str)
 # parser.add_argument('--model_name')
 parser.add_argument('--base_model')
 args = parser.parse_args()
@@ -257,6 +258,7 @@ for model_type in model_type_list:
         with h5py.File(f'{args.neuro_wise}_{model_type}_synth_layer_activation.hdf5','r')as s:
             with h5py.File(f'{args.neuro_wise}_{model_type}_natural_layer_activation.hdf5','r')as f:
                 for seed in random_list:
+                    print(seed)
                     for k in layerlist:
                         print(k)
                         imagenet_data=m[k]
@@ -287,7 +289,9 @@ for model_type in model_type_list:
                                 synth_prediction=synth_prediction+pls.predict((synth_x_pca))
                             if fold==9:
                                 synth_prediction=synth_prediction/10
-
+                        if args.per_figure == 'True':
+                            np.save(f'gdrive/MyDrive/V4/{session_name}/pls_IN_pca_per_fig_{model_type}_synth_neuron_corr.npy',synth_prediction)
+                            np.save(f'gdrive/MyDrive/V4/{session_name}/pls_IN_pca_per_fig_{model_type}_natural_neuron_corr.npy',natural_prediction)
                         if natural_score_dict[k] is None:
                             natural_corr_array= np.array([pearsonr(natural_prediction[:, i], target[:, i])[0] for i in range(natural_prediction.shape[-1])])
                             total_natural_corr=natural_corr_array
