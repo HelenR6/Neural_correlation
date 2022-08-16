@@ -298,54 +298,5 @@ for model_type in model_type_list:
                 #                 synth_prediction=synth_prediction+pls.predict((synth_x_pca))
                 #             if fold==9:
                 #                 synth_prediction=synth_prediction/10
-                        if natural_score_dict[k] is None:
-                            natural_score_dict[k] = natural_score
-                            cc=cc+1
-                        else:
-                            natural_score_dict[k] =np.append(natural_score_dict[k],natural_score)
-                            cc=cc+1
-                        if synth_score_dict[k] is None:
-                            synth_score_dict[k] = synth_score
-                        else:
-                            synth_score_dict[k] =np.append(synth_score_dict[k],synth_score)
-                        print(natural_score_dict[k])
-                        print(synth_score_dict[k]) 
-                    print(cc)
-                    if neuro_wise=='True':
-                        np.save(f'gdrive/MyDrive/V4/{session_name}/pls_IN_pca_{model_type}_synth_layers_cka.npy',total_synth_corr)
-                        np.save(f'gdrive/MyDrive/V4/{session_name}/pls_IN_pca_{model_type}_natural_layers_cka.npy',total_natural_corr)
 
-
-                    else:
-
-
-                        from statistics import mean
-                        new_natural_score_dict = {k:  v.tolist() for k, v in natural_score_dict.items()}
-                        new_synth_score_dict = {k:  v.tolist() for k, v in synth_score_dict.items()}
-                        import json
-                        # Serializing json  
-                        synth_json = json.dumps(new_synth_score_dict, indent = 4) 
-                        natural_json = json.dumps(new_natural_score_dict, indent = 4) 
-                        print(natural_json)
-                        print(synth_json)
-
-                        with open(f"gdrive/MyDrive/V4/{session_name}/pls_{model_type}_natural.json", 'w') as f:
-                            json.dump(natural_json, f)
-                        with open(f"gdrive/MyDrive/V4/{session_name}/pls_{model_type}_synth.json", 'w') as f:
-                            json.dump(synth_json, f)
-
-                        natural_mean_dict = {k:  mean(v) for k, v in natural_score_dict.items()}
-                        synth_mean_dict = {k:  mean(v) for k, v in synth_score_dict.items()}
-                        json_object = json.dumps(natural_mean_dict, indent = 4) 
-                        print(json_object)
-                        with open(f"gdrive/MyDrive/V4/{session_name}/pls_{model_type}_natural_mean.json", 'w') as f:
-                            json.dump(json_object, f)
-
-                        json_object = json.dumps(synth_mean_dict, indent = 4) 
-                        print(json_object)
-                        with open(f"gdrive/MyDrive/V4/{session_name}/pls_{model_type}_synth_mean.json", 'w') as f:
-                            json.dump(json_object, f)
-                os.remove(f'{args.neuro_wise}_{model_type}_natural_layer_activation.hdf5')
-                os.remove(f'{args.neuro_wise}_{model_type}_synth_layer_activation.hdf5')
-                os.remove(f'{args.neuro_wise}_{model_type}_imagenet_layer_activation.hdf5')
 
