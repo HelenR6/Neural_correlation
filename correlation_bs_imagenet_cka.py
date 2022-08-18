@@ -282,9 +282,9 @@ for model_type in model_type_list:
                     max_synth_score=max(synth_score_dict.values())
                     np.save(f'gdrive/MyDrive/V4/{session_name}/pls_IN_pca_{model_type}_natural_cka_score.npy',max_natural_score)
                     np.save(f'gdrive/MyDrive/V4/{session_name}/pls_IN_pca_{model_type}_synth_cka_score.npy',max_synth_score)
-                      os.remove(f'{args.neuro_wise}_{model_type}_natural_layer_activation.hdf5')
-                os.remove(f'{args.neuro_wise}_{model_type}_synth_layer_activation.hdf5')
-                os.remove(f'{args.neuro_wise}_{model_type}_imagenet_layer_activation.hdf5')          
+      os.remove(f'{args.neuro_wise}_{model_type}_natural_layer_activation.hdf5')
+      os.remove(f'{args.neuro_wise}_{model_type}_synth_layer_activation.hdf5')
+      os.remove(f'{args.neuro_wise}_{model_type}_imagenet_layer_activation.hdf5')          
                 #         kfold = KFold(n_splits=10, shuffle=True,random_state=seed)
                 #         num_neuron=n1.shape[2]
                 #         natural_prediction= np.empty((640,target.shape[1]), dtype=object)
